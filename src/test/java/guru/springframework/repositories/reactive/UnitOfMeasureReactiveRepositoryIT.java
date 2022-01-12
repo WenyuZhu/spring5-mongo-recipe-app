@@ -1,26 +1,26 @@
-package guru.springframework.repositories;
+package guru.springframework.repositories.reactive;
 
 import guru.springframework.bootstrap.RecipeBootstrap;
 import guru.springframework.domain.UnitOfMeasure;
+import guru.springframework.repositories.CategoryRepository;
+import guru.springframework.repositories.RecipeRepository;
+import guru.springframework.repositories.UnitOfMeasureRepository;
+import guru.springframework.repositories.reactive.CategoryReactiveRepository;
+import guru.springframework.repositories.reactive.UnitOfMeasureReactiveRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * Created by jt on 6/17/17.
- */
 @RunWith(SpringRunner.class)
 @DataMongoTest
-public class UnitOfMeasureRepositoryIT {
-
+public class UnitOfMeasureReactiveRepositoryIT {
     @Autowired
     UnitOfMeasureRepository unitOfMeasureRepository;
 
@@ -30,6 +30,8 @@ public class UnitOfMeasureRepositoryIT {
     @Autowired
     RecipeRepository recipeRepository;
 
+    @Autowired
+    UnitOfMeasureReactiveRepository unitOfMeasureReactiveRepository;
     @Before
     public void setUp() throws Exception {
         categoryRepository.deleteAll();
@@ -41,19 +43,14 @@ public class UnitOfMeasureRepositoryIT {
     }
 
     @Test
-    public void findByDescription() throws Exception {
-
-        Optional<UnitOfMeasure> uomOptional = unitOfMeasureRepository.findByDescription("Teaspoon");
-
-        assertEquals("Teaspoon", uomOptional.get().getDescription());
+    public void findAll() throws Exception {
+        assertEquals(8L, unitOfMeasureReactiveRepository.count().block().longValue());
     }
 
     @Test
     public void findByDescriptionCup() throws Exception {
 
-        Optional<UnitOfMeasure> uomOptional = unitOfMeasureRepository.findByDescription("Cup");
-
-        assertEquals("Cup", uomOptional.get().getDescription());
+        UnitOfMeasure unitOfMeasure = unitOfMeasureReactiveRepository.findByDescription("Cup").block();
+        assertEquals("Cup", unitOfMeasure.getDescription());
     }
-
 }
